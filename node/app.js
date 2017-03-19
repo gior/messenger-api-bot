@@ -352,7 +352,7 @@ function receivedMessage(event) {
         break;
 
       default:
-        var response = extNlp.request(messageText);
+        var response = extNlp.nlpRequest(messageText);
         sendTextMessage(senderID, response);
     }
   } else if (messageAttachments) {
