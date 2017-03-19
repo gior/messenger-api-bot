@@ -86,6 +86,7 @@ class ApiaiConnector extends apiai {
       });
 
       aiRequest.end();
+      return response;
     }
   }
 }
