@@ -76,9 +76,11 @@ class ApiaiConnector extends apiai {
         sessionId: '234567890qwertyuiop'
         // sessionId: '<unique session id>'
       });
+      var aiResponse = '^_^';
 
       aiRequest.on('response', function(response) {
         console.log('apiai response: ', response);
+        aiResponse = response;
       });
 
       aiRequest.on('error', function(error) {
@@ -86,7 +88,7 @@ class ApiaiConnector extends apiai {
       });
 
       aiRequest.end();
-      return response;
+      return aiResponse;
     }
   }
 }
