@@ -80,7 +80,7 @@ class ApiaiConnector extends apiai {
 
       aiRequest.on('response', function(response) {
         console.log('apiai response: ', response);
-        aiResponse = response;
+        aiResponse = response.fullfillment.speech;
       });
 
       aiRequest.on('error', function(error) {
