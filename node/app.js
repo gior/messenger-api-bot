@@ -16,7 +16,8 @@ const
   crypto = require('crypto'),
   express = require('express'),
   https = require('https'),  
-  request = require('request');
+  request = require('request'),
+  apiai = require('apiai');
 
 var app = express();
 app.set('port', process.env.PORT || 5000);
@@ -55,6 +56,41 @@ if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
   console.error("Missing config values");
   process.exit(1);
 }
+
+
+
+// API.AI integration
+
+const APIAI_CLIENT_TOKEN = (process.env.APIAI_CLIENT_TOKEN) ?
+  (process.env.APIAI_CLIENT_TOKEN) :
+  config.get('apiaiClientToken');
+
+const APIAI_DEVELOPER_TOKEN = (process.env.APIAI_DEVELOPER_TOKEN) ?
+  (process.env.APIAI_DEVELOPER_TOKEN) :
+config.get('apiaiDeveloperToken');
+
+var apiaiConnector = apiai(APIAI_CLIENT_TOKEN);
+
+
+var aiRequest = apiaiConnector.textRequest("I'd like to get in at 3 PM", {
+  sessionId: '234567890qwertyuiop'
+  // sessionId: '<unique session id>'
+});
+
+aiRequest.on('response', function(response) {
+  console.log('apiai response: ', response);
+});
+
+aiRequest.on('error', function(error) {
+  console.log('apiai error: ', error);
+});
+
+aiRequest.end();
+
+
+// end API.AI integration
+
+
 
 /*
  * Use your own validation token. Check that the token used in the Webhook 
