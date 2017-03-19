@@ -58,35 +58,43 @@ if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
 }
 
 
-
 // API.AI integration
 
-const APIAI_CLIENT_TOKEN = (process.env.APIAI_CLIENT_TOKEN) ?
-  (process.env.APIAI_CLIENT_TOKEN) :
-  config.get('apiaiClientToken');
+class ApiaiConnector extends apiai {
+  constructor() {
+    const CLIENT_TOKEN = (process.env.APIAI_CLIENT_TOKEN) ?
+      (process.env.APIAI_CLIENT_TOKEN) :
+      config.get('apiaiClientToken');
+    super(CLIENT_TOKEN);
+    this.CLIENT_TOKEN = CLIENT_TOKEN;
+    this.DEVELOPER_TOKEN = (process.env.APIAI_DEVELOPER_TOKEN) ?
+      (process.env.APIAI_DEVELOPER_TOKEN) :
+      config.get('apiaiDeveloperToken');
 
-const APIAI_DEVELOPER_TOKEN = (process.env.APIAI_DEVELOPER_TOKEN) ?
-  (process.env.APIAI_DEVELOPER_TOKEN) :
-config.get('apiaiDeveloperToken');
+    this.nlpRequest = function(textMessage) {
+      var aiRequest = this.textRequest(textMessage, {
+        sessionId: '234567890qwertyuiop'
+        // sessionId: '<unique session id>'
+      });
 
-var apiaiConnector = apiai(APIAI_CLIENT_TOKEN);
+      aiRequest.on('response', function(response) {
+        console.log('apiai response: ', response);
+      });
+
+      aiRequest.on('error', function(error) {
+        console.log('apiai error: ', error);
+      });
+
+      aiRequest.end();
+    }
+  }
+}
 
 
-var aiRequest = apiaiConnector.textRequest("I'd like to get in at 3 PM", {
-  sessionId: '234567890qwertyuiop'
-  // sessionId: '<unique session id>'
-});
 
-aiRequest.on('response', function(response) {
-  console.log('apiai response: ', response);
-});
+var extNlp = new ApiaiConnector();
 
-aiRequest.on('error', function(error) {
-  console.log('apiai error: ', error);
-});
-
-aiRequest.end();
-
+// extNlp.nlpRequest("I'd like to get in at 3 PM");
 
 // end API.AI integration
 
@@ -344,7 +352,8 @@ function receivedMessage(event) {
         break;
 
       default:
-        sendTextMessage(senderID, messageText);
+        var response = extNlp.request(messageText);
+        sendTextMessage(senderID, response);
     }
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
