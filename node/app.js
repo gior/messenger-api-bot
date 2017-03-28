@@ -79,8 +79,7 @@ class ApiaiConnector extends apiai {
       var aiResponse = '^_^';
 
       aiRequest.on('response', function(response) {
-        console.log('apiai response: ', response);
-        aiResponse = response.result.fullfillment.speech;
+        aiResponse = response.result.fulfillment.speech;
       });
 
       aiRequest.on('error', function(error) {
@@ -97,11 +96,14 @@ class ApiaiConnector extends apiai {
 
 var extNlp = new ApiaiConnector();
 
-// extNlp.nlpRequest("I'd like to get in at 3 PM");
+extNlp.nlpRequest("I'd like to get in at 3 PM");
 
 // end API.AI integration
 
 
+// app.get('/test', function(req, res) {
+//   extNlp.nlpRequest("I'd like to get in at 3 PM")
+// });
 
 /*
  * Use your own validation token. Check that the token used in the Webhook 
