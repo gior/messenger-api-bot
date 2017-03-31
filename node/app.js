@@ -76,34 +76,39 @@ class ApiaiConnector extends apiai {
         sessionId: '234567890qwertyuiop'
         // sessionId: '<unique session id>'
       });
-      var aiResponse = '^_^';
+      // var aiResponse = '^_^';
+      var aiResponse = new Promise((resolve, reject) => {
+        aiRequest.on('response', function(response) {
+          console.log('apiai response: ', response);
+          resolve(response.result.fulfillment.speech);
+        });
 
-      aiRequest.on('response', function(response) {
-        aiResponse = response.result.fulfillment.speech;
-      });
-
-      aiRequest.on('error', function(error) {
-        console.log('apiai error: ', error);
+        aiRequest.on('error', function(error) {
+          console.log('apiai error: ', error);
+          reject(error);
+        });
       });
 
       aiRequest.end();
       return aiResponse;
-    }
+    };
+
   }
 }
 
-
-
 var extNlp = new ApiaiConnector();
-
-extNlp.nlpRequest("I'd like to get in at 3 PM");
 
 // end API.AI integration
 
 
-// app.get('/test', function(req, res) {
-//   extNlp.nlpRequest("I'd like to get in at 3 PM")
-// });
+// Dev test
+
+// extNlp.nlpRequest("I'd like to check in at 3 PM")
+//   .then((val) => {console.log("Answer:", val)})
+//   .catch((err) => {return("I'm very confused")});
+
+// end Dev test
+
 
 /*
  * Use your own validation token. Check that the token used in the Webhook 
@@ -357,7 +362,10 @@ function receivedMessage(event) {
         break;
 
       default:
-        var response = extNlp.nlpRequest(messageText);
+        var response;
+        extNlp.nlpRequest(messageText)
+          .then((val) => {response = val})
+          .catch((err) => {response = "I'm confused"});
         sendTextMessage(senderID, response);
     }
   } else if (messageAttachments) {
