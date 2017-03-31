@@ -362,11 +362,10 @@ function receivedMessage(event) {
         break;
 
       default:
-        var response;
         extNlp.nlpRequest(messageText)
-          .then((val) => {response = val})
-          .catch((err) => {response = "I'm confused"});
-        sendTextMessage(senderID, response);
+          .then((val) => {sendTextMessage(senderID, val) })
+          .catch((err) => {sendTextMessage(senderID, "I'm confused") });
+
     }
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
